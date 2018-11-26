@@ -129,6 +129,86 @@ sppUtils.setOnDeviceCallBack(new SppUtils.OnDeviceCallBack() {
   mSppUtils.bytesToHexString();
   mSppUtils.hexStringToBytes();
   ```
+  ### 备注：
+  >1、在Library中加入定位权限，不然在Android6.0以上系统上使用，搜索不到蓝牙
+  >2、本Module采用通信方式为非安全模式 不需要通过输入pin码进行配对
+  ```
+  private class ConnectThread extends Thread {
+        private final BluetoothSocket mmSocket;
+        private final BluetoothDevice mmDevice;
+        private String mSocketType;
+
+        public ConnectThread(BluetoothDevice device) {
+            mmDevice = device;
+            BluetoothSocket tmp = null;
+            try {
+                //Android2.3以下的API 这种方式会需要pin码 安全通信
+                //tmp = device.createRfcommSocketToServiceRecord(UUID_DEVICE);
+                //这种方式会不需要pin码 非安全通信
+                tmp = device.createInsecureRfcommSocketToServiceRecord(UUID_DEVICE);
+
+            } catch (IOException e) {
+
+            }
+            mmSocket = tmp;
+        }
+
+        public void run() {
+            //总是取消搜索，因为它会减慢连接速度
+            mAdapter.cancelDiscovery();
+            try {
+                //这是一个阻塞调用，只会在连接成功或异常时返回
+                mmSocket.connect();
+            } catch (IOException e) {
+                try {
+                    mmSocket.close();
+                } catch (IOException e2) {
+
+                }
+                connectionFailed();
+                return;
+            }
+
+            // Reset the ConnectThread because we're done
+            synchronized (SppService.this) {
+                mConnectThread = null;
+            }
+            connected(mmSocket, mmDevice, mSocketType);
+        }
+
+        public void cancel() {
+            try {
+                mmSocket.close();
+                Log.e(TAG,"ConnectThread: mmSocket.close()");
+            } catch (IOException e) {
+
+            }
+        }
+    }
+  ```
+  >3、市面上有很多通过反射拿到BlueDevice的方法设置pin码,进行自动配对。但是这种只适用于Android5.0一下系统，5.0以上系统同样会弹出输入pin码的Dialog，因为5.0之后：@RequiresPermission(Manifest.permission.BLUETOOTH_PRIVILEGED)这个时系统应用权限，第三方应用根本没有这个权限，在5.0上反射是拿不到这个方法的，所以5.0以上系统实现不了自动配对，依然是弹出对话框输入pin码。
+  除非：采用非安全通信方式就不需要输入pin码
+  ```
+      /**
+     * Confirm passkey for {@link #PAIRING_VARIANT_PASSKEY_CONFIRMATION} pairing.
+     *
+     * @return true confirmation has been sent out
+     *         false for error
+     */
+    @RequiresPermission(Manifest.permission.BLUETOOTH_PRIVILEGED)
+    public boolean setPairingConfirmation(boolean confirm) {
+        if (sService == null) {
+            Log.e(TAG, "BT not enabled. Cannot set pairing confirmation");
+            return false;
+        }
+        try {
+            return sService.setPairingConfirmation(this, confirm);
+        } catch (RemoteException e) {Log.e(TAG, "", e);}
+        return false;
+    }
+
+  ```
+  
   
   
    
