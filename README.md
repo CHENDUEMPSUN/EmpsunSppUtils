@@ -189,7 +189,7 @@ sppUtils.setOnDeviceCallBack(new SppUtils.OnDeviceCallBack() {
     }
   ```
   
-  >3、市面上有很多通过反射拿到BlueDevice的方法设置pin码,进行自动配对。但是这种只适用于Android5.0一下系统，5.0以上系统同样会弹出输入pin码的Dialog，因为5.0之后：@RequiresPermission(Manifest.permission.BLUETOOTH_PRIVILEGED)这个时系统应用权限，第三方应用根本没有这个权限，在5.0上反射是拿不到这个方法的，所以5.0以上系统实现不了自动配对，依然是弹出对话框输入pin码。
+  >3、市面上有很多通过反射拿到BlueDevice的方法设置pin码,进行自动配对。但是这种只适用于Androidx.x以下系统，x.x以上系统同样会弹出输入pin码的Dialog，因为x.x之后：@RequiresPermission(Manifest.permission.BLUETOOTH_PRIVILEGED)这个时系统应用权限，第三方应用根本没有这个权限，在5.0上反射是拿不到这个方法的，所以x.x以上系统实现不了自动配对，依然是弹出对话框输入pin码。(具体是哪个系统版本暂未查证)
   除非：采用非安全通信方式就不需要输入pin码
   
   ```
