@@ -131,7 +131,9 @@ sppUtils.setOnDeviceCallBack(new SppUtils.OnDeviceCallBack() {
   ```
   ### 备注：
   >1、在Library中加入定位权限，不然在Android6.0以上系统上使用，搜索不到蓝牙
+  
   >2、本Module采用通信方式为非安全模式 不需要通过输入pin码进行配对
+  
   ```
   private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
@@ -186,8 +188,10 @@ sppUtils.setOnDeviceCallBack(new SppUtils.OnDeviceCallBack() {
         }
     }
   ```
+  
   >3、市面上有很多通过反射拿到BlueDevice的方法设置pin码,进行自动配对。但是这种只适用于Android5.0一下系统，5.0以上系统同样会弹出输入pin码的Dialog，因为5.0之后：@RequiresPermission(Manifest.permission.BLUETOOTH_PRIVILEGED)这个时系统应用权限，第三方应用根本没有这个权限，在5.0上反射是拿不到这个方法的，所以5.0以上系统实现不了自动配对，依然是弹出对话框输入pin码。
   除非：采用非安全通信方式就不需要输入pin码
+  
   ```
       /**
      * Confirm passkey for {@link #PAIRING_VARIANT_PASSKEY_CONFIRMATION} pairing.
