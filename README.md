@@ -1,5 +1,6 @@
 # EmpsunSppUtils
->使用方法(Grade):
+### 使用集成:
+
 ```
 allprojects {
     repositories {
@@ -13,4 +14,10 @@ allprojects {
 ```
 //在Module添加依赖
 implementation 'com.github.CHENDUEMPSUN:EmpsunSppUtils:v1.0.0'
+```
+
+### 获得SppUtils对象
+
+```
+ SppUtils sppUtils = new SppUtils(this);
 ```
