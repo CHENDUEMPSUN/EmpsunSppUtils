@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         initID();
         mSppUtils = new SppUtils(this);
+        mSppUtils.setupService();
         mSppUtils.startService();
 
         if(!mSppUtils.isBluetoothAvailable()) {
@@ -51,12 +52,19 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
+
+
                         mReciveData.setText(mReciveData.getText()+ SppStringUtils.bytesToHexString(data));
                     }
                 });
 
             }
         });
+
+
+
+
 
 
     }
@@ -69,14 +77,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void onDestroy() {
         super.onDestroy();
+        //断开蓝牙连接
+        if(mSppUtils.getServiceState() == SppState.STATE_CONNECTED) {
+            mSppUtils.disconnect();
+        }
+        //停止服务
         mSppUtils.stopService();
     }
 
     public void onStart() {
         super.onStart();
         if(!mSppUtils.isBluetoothEnabled()) {
+            //开启蓝牙
             mSppUtils.enable();
         } else {
+            //
             if(!mSppUtils.isServiceAvailable()) {
                 mSppUtils.setupService();
                 mSppUtils.startService();
